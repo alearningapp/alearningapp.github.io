@@ -1,1 +1,1 @@
-# alearingapp.github.io
+# [A Learning App For Kids](https://alearningapp.com)
