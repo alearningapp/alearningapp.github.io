@@ -95,33 +95,14 @@
     ]
   },
   {
-    "name": "Relationships",
+    "name": "Family",
     "items": [
-      "Friend",
+	  "Grandfather",
+      "Grandmother",
       "Father",
       "Mother",
-      "Sibling",
       "Brother",
-      "Sister",
-      "Partner",
-      "Neighbor",
-      "Cousin",
-      "Aunt",
-      "Uncle",
-      "Grandfather",
-      "Grandmother",
-      "Child",
-      "Niece",
-      "Nephew",
-      "Grandchild",
-      "Mentor",
-      "Spouse",
-      "Fiancé",
-      "Guardian",
-      "Classmate",
-      "Teacher",
-      "Colleague",
-      "Acquaintance"
+      "Sister"
     ]
   },
   {
