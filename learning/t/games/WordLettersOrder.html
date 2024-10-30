@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Letters Game - Make by Alearningapp.com</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #f0f0f0;
+      }
+      svg {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .letter {
+        cursor: pointer;
+        transition: all 1s;
+      }
+      .dashed {
+        stroke: #000;
+        stroke-width: 1;
+        stroke-dasharray: 5, 5; /* Dashed line */
+      }
+      .solid {
+        stroke: #000;
+        stroke-width: 1;
+      }
+      * {
+        user-select: none;
+      }
+      .started {
+        display: none;
+      }
+
+    </style>
+    <script>
+      function playAudio(word) {
+        // Create a new audio element
+        const audio = new Audio(  "/dictaudio/" + word.toLocaleLowerCase() + ".mp3");
+
+        // Set up an event listener to remove the audio element after it finishes playing
+        audio.addEventListener("ended", () => {
+          audio.pause();
+          audio.currentTime = 0; // Reset to the beginning
+          audio.remove(); // Remove the audio element
+        });
+
+        // Start playing the audio
+        audio.play().catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+
+        // Optionally, you can return the audio element if needed
+        return audio;
+      }
+      function getVisibleCircleCoordinates(numCircles, distance, canvasSize) {
+        const coordinates = [];
+        const centerX = 0; // X coordinate of the center point
+        const centerY = 0; // Y coordinate of the center point
+        const halfCanvasSize = canvasSize / 2;
+
+        for (let i = 0; i < numCircles; i++) {
+          // Calculate the angle for even distribution
+          const angle = (i * 2 * Math.PI) / numCircles;
+
+          // Calculate x and y positions at a fixed distance
+          const x = centerX + distance * Math.cos(angle);
+          const y = centerY + distance * Math.sin(angle);
+
+          coordinates.push({ x, y });
+        }
+
+        return coordinates;
+      }
+      function calculateDistance(pointA, pointB) {
+        const x1 = pointA.x;
+        const y1 = pointA.y;
+        const x2 = pointB.x;
+        const y2 = pointB.y;
+
+        const distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        return distance;
+      }
+
+      function drawCircle(svgCanvas, cx, cy, r, color) {
+        const newCircle = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle"
+        );
+
+        newCircle.setAttribute("cx", cx);
+        newCircle.setAttribute("cy", cy);
+        newCircle.setAttribute("r", r);
+        newCircle.setAttribute("fill", color);
+
+        svgCanvas.appendChild(newCircle);
+      }
+    </script>
+  </head>
+  <body>
+    <audio id="backgroundMusic" controls autoplay loop style="display: none">
+      <source src="/sound/bg/Sakura-Girl-Daisy.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+    <svg id="gameArea">
+
+      <rect width="100%" height="50%" fill="#e6e6e6" />
+
+      <!-- Top Part Lines -->
+      <line x1="0" y1="12.5%" x2="100%" y2="12.5%" class="solid" />
+      <line x1="0" y1="25%" x2="100%" y2="25%" class="dashed" />
+      <line x1="0" y1="37.5%" x2="100%" y2="37.5%" class="solid" />
+      <g id="letters"></g>
+
+      <style>
+        .button {
+          fill: #4caf50; /* Green color */
+          cursor: pointer; /* Change cursor to pointer */
+          transition: fill 0.3s; /* Smooth transition */
+        }
+        .button:hover {
+          fill: #45a049; /* Darker green on hover */
+        }
+        .button-text {
+          fill: white; /* Text color */
+          font-family: Arial, sans-serif; /* Font family */
+          font-size: 16px; /* Font size */
+          text-anchor: middle; /* Center text */
+          dominant-baseline: middle; /* Center vertically */
+        }
+      </style>
+
+      <circle cx="50%" cy="75%" r="30" class="button" id="startbtn" />
+      <text x="50%" y="75%" class="button-text" id="start">Start</text>
+
+    </svg>
+        <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24" 
+        id="playsound" style="    position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 60px;
+        height: 60px;"
+        width="100%"
+        height="100%">
+        <path
+            d="M3 9v6h4l5 5V4L7 9H3zm12.5 3c0-1.38-.56-2.64-1.5-3.5v7c.94-.86 1.5-2.12 1.5-3.5zm2.5 0c0 2.76-1.12 5.26-2.93 7.07l1.42 1.42C19.76 17.04 21 14.67 21 12s-1.24-5.04-3.01-6.49l-1.42 1.42c1.81 1.81 2.93 4.31 2.93 7.07z"
+            fill="#007bff" />
+    </svg>
+    <script>
+      const url = new URL(window.location.href);
+
+      const params = new URLSearchParams(url.search);
+
+      const id = params.get("id");
+
+      function removeElementsByClass(className) {
+        const elements = document.getElementsByClassName(className);
+        while (elements.length > 0) {
+            elements[0].parentNode.removeChild(elements[0]);
+        }
+    }
+
+      function run(id,doFinish) {
+        removeElementsByClass("letter");
+        let startbtn = document.querySelector("#startbtn");
+
+        [document.querySelector("#start"), startbtn].map((e) =>
+                e.classList.remove("started")
+              );
+        const letters = id.split("");
+        const svg = document.getElementById("gameArea");
+        const lettersNode = document.getElementById("letters");
+        const topHalf = svg.clientHeight / 2; // Height of the top half
+        const fontSize = svg.clientHeight / 4;
+        const finalYPosition = (svg.clientHeight * 2) / 8; // Y position between the two solid lines
+        lettersNode.setAttribute("font-size", fontSize);
+
+        const orderLetters = [];
+        const startX = 50;
+
+        const texts = letters.map((letter) => {
+          const textElement = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text"
+          );
+          textElement.textContent = letter;
+          textElement.classList.add("letter");
+
+          const randomX = Math.max(
+            fontSize,
+            Math.random() * svg.clientWidth - fontSize
+          );
+          const randomY = Math.min(
+            topHalf + Math.random() * topHalf,
+            window.innerHeight - fontSize
+          );
+
+          textElement.setAttribute("x", startX);
+          textElement.setAttribute("y", finalYPosition);
+          textElement.setAttribute("dominant-baseline", "baseline");
+          const randomRotation = Math.random() * 60 - 30; // Range: -30 to 30 degrees
+          textElement.setAttribute("transform", `translate(0, 0) rotate(0)`);
+          textElement.setAttribute("letter", letter);
+          textElement.addEventListener("click", () => {
+            let index = orderLetters.indexOf(textElement);
+
+            if (index > -1) {
+              orderLetters.splice(index);
+              randomPostion();
+              return;
+            }
+
+            const maxWidth = texts[0].getBBox().width;
+            let translateX = orderLetters.reduce(
+              (total, e) =>
+                total + (e.getBBox().width > 0 ? e.getBBox().width : maxWidth),
+              startX
+            );
+            let translateY = 0;
+            textElement.setAttribute(
+              "transform",
+              `translate(${translateX}, ${translateY}) rotate(0) scale(1,1)`
+            );
+            orderLetters.push(textElement);
+            textElement.setAttribute(
+              "fill",
+              letters[orderLetters.length - 1] ==
+                textElement.getAttribute("letter")
+                ? "green"
+                : "red"
+            );
+            if (
+              letters.length > orderLetters.length &&
+              letters[orderLetters.length] == " "
+            ) {
+              orderLetters.push(
+                texts.filter(
+                  (t) =>
+                    orderLetters.indexOf(t) == -1 &&
+                    t.getAttribute("letter") == " "
+                )[0]
+              );
+            }
+
+            let isFinish =
+              orderLetters.length == letters.length &&
+              letters.filter(
+                (e, i) => orderLetters[i].getAttribute("letter") != e
+              ).length == 0;
+            if (isFinish) {
+              [document.querySelector("#start"), startbtn].map((e) =>
+                e.classList.remove("started")
+              );
+              playAudio("good job")
+            }
+          });
+
+          return textElement;
+        });
+
+        lettersNode.append(...texts);
+        let translateX = startX;
+        let bbox = document.querySelector("#startbtn").getBBox();
+
+        let translateY = 0;
+
+        texts.map((text) => {
+          let tbbox = text.getBBox();
+
+          translateX = bbox.x + bbox.width / 2 - (tbbox.x - tbbox.width / 2);
+          translateY = bbox.y + bbox.height / 2 - tbbox.y;
+          text.setAttribute(
+            "transform",
+            `translate(${translateX}, ${translateY}) rotate(0) scale(0.1)`
+          );
+          translateX += text.getBBox().width;
+        });
+
+        const randomPostion = function (force) {
+          [document.querySelector("#start"), startbtn].map((e) =>
+            e.classList.add("started")
+          );
+          let randomIndexs = [];
+          texts
+            .filter((e) => orderLetters.indexOf(e) < 0 || force)
+            .map((text) => {
+              let tbbox = text.getBBox();
+
+              translateX = Math.max(
+                fontSize,
+                Math.random() * svg.clientWidth - fontSize
+              );
+              translateY =
+                bbox.y + bbox.height / 2 - (tbbox.y + tbbox.height / 2);
+              const randomRotation = Math.random() * 40 - 20; // Range: -30 to 30 degrees
+              let index;
+              while (
+                (index = parseInt(Math.random() * ppoints.length - 1)) &&
+                randomIndexs.indexOf(index) > -1
+              ) {}
+              randomIndexs.push(index);
+              translateX = ppoints[index].x - startX;
+              translateY = ppoints[index].y - finalYPosition;
+              text.setAttribute(
+                "transform",
+                `translate(${translateX}, ${translateY}) rotate(${randomRotation}) scale(1)`
+              );
+              text.removeAttribute("fill");
+            });
+        };
+        [document.querySelector("#start"), startbtn].map((button) =>
+          button.onclick= () => {
+
+            
+            let isFinish =
+              orderLetters.length == letters.length &&
+              letters.filter(
+                (e, i) => orderLetters[i].getAttribute("letter") != e
+              ).length == 0;
+            if (isFinish) {
+                doFinish&&doFinish();
+                return;
+            }
+
+            document
+              .querySelector("#backgroundMusic")
+              .play()
+              .catch((error) => {
+                console.log("Playback failed:", error);
+              });
+
+            playAudio(
+              letters.join("")
+            );
+            randomPostion(orderLetters.length == letters.length);
+          }
+        );
+        document.querySelector("#playsound").onclick=()=>{
+            playAudio(
+              letters.join("")
+            );
+        }
+        
+        const numCircles = 15;
+        let r = calculateDistance(
+          { x: 0, y: 0 },
+          { x: svg.clientWidth, y: svg.clientHeight }
+        );
+        let rm = Math.min(svg.clientWidth / 2, svg.clientHeight / 2);
+        let ppoints = [];
+        for (
+          let y = svg.clientHeight / 2;
+          y <= svg.clientHeight - fontSize / 3;
+          y += fontSize / 3
+        ) {
+          for (
+            let x = fontSize / 2;
+            x <= svg.clientWidth - fontSize / 3;
+            x += fontSize / 3
+          ) {
+            ppoints.push({ x: x, y: y });
+          }
+        }
+      }
+
+   
+        (async()=>{
+
+            
+        id&& await new Promise((resolve)=>{
+                   return  run(id,resolve);
+         });
+
+           let words = await fetch('/api/words.json').then(r=>r.json());
+
+           let i;
+            while(i=parseInt(Math.random()*words.length) ){
+                await new Promise((resolve)=>{
+                    words.splice(i,1);
+                   return  run(words[i],resolve);
+                })
+               
+            }
+
+        })();
+      
+
+
+      //  ppoints.map(p=>drawCircle(svg,p.x,p.y,5,'#000'));
+    </script>
+  </body>
+</html>
