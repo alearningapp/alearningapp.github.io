@@ -36,34 +36,30 @@
       }
     </style>
     <script>
-     async function playAudio(word) {
-        return new Promise((resolve)=>{
+      async function playAudio(word) {
+        return new Promise((resolve) => {
+          // Create a new audio element
+          const audio = new Audio(
+            "/dictaudio/" + word.toLocaleLowerCase() + ".mp3"
+          );
 
-                    // Create a new audio element
-        const audio = new Audio(
-          "/dictaudio/" + word.toLocaleLowerCase() + ".mp3"
-        );
+          // Set up an event listener to remove the audio element after it finishes playing
+          audio.addEventListener("ended", () => {
+            audio.pause();
+            audio.currentTime = 0; // Reset to the beginning
+            audio.remove(); // Remove the audio element
+            resolve();
+          });
+          console.log("playAudio");
+          // Start playing the audio
+          audio.play().catch((error) => {
+            console.error("Error playing audio:", error);
+            resolve();
+          });
 
-        // Set up an event listener to remove the audio element after it finishes playing
-        audio.addEventListener("ended", () => {
-          audio.pause();
-          audio.currentTime = 0; // Reset to the beginning
-          audio.remove(); // Remove the audio element
-          resolve();
+          // Optionally, you can return the audio element if needed
+          return audio;
         });
-        console.log('playAudio')
-        // Start playing the audio
-        audio.play().catch((error) => {
-          console.error("Error playing audio:", error);
-          resolve();
-
-        });
-
-        // Optionally, you can return the audio element if needed
-        return audio;
-
-        });
-
       }
       function getVisibleCircleCoordinates(numCircles, distance, canvasSize) {
         const coordinates = [];
@@ -265,10 +261,17 @@
                 (e, i) => orderLetters[i].getAttribute("letter") != e
               ).length == 0;
             if (isFinish) {
-              [document.querySelector("#start"), startbtn].map((e) =>
-                e.classList.remove("started")
-              );
-             doFinish&&doFinish();
+                (async()=>{
+
+                await playAudio(letters.join(''));
+                await new Promise((resolve) => setTimeout(resolve, 10));
+                await playAudio("good job");
+                [
+                    document.querySelector("#start"),
+                    document.querySelector("#startbtn"),
+                ].map((e) => {e.classList.remove("started")});
+                })();
+
             }
           });
 
@@ -294,6 +297,7 @@
         });
 
         const randomPostion = function (force) {
+          console.log("randomPostion");
           [document.querySelector("#start"), startbtn].map((e) =>
             e.classList.add("started")
           );
@@ -319,7 +323,8 @@
               translateX = ppoints[index].x - startX;
               translateY = ppoints[index].y - finalYPosition;
 
-              if(ppoints[index].x + fontSize/2>svg.clientWidth) randomRotation=0;
+              if (ppoints[index].x + fontSize / 2 > svg.clientWidth)
+                randomRotation = 0;
 
               text.setAttribute(
                 "transform",
@@ -359,7 +364,7 @@
 
         let ppoints = [];
         for (
-          let y = svg.clientHeight *5/8 ;
+          let y = (svg.clientHeight * 5) / 8;
           y <= svg.clientHeight - fontSize / 3;
           y += fontSize / 3
         ) {
@@ -372,15 +377,20 @@
           }
         }
         if (isFirst) {
-          startBtnHandle();
+          // startBtnHandle();
         }
       }
 
       (async () => {
-        id &&
-          (await new Promise((resolve) => {
+        if (id) {
+          await new Promise((resolve) => {
             return run(id, resolve);
-          }));
+          });
+          [
+            document.querySelector("#start"),
+            document.querySelector("#startbtn"),
+          ].map((e) => e.classList.remove("started"));
+        }
 
         let words = await fetch("/api/words.json").then((r) => r.json());
 
@@ -390,10 +400,8 @@
             words.splice(i, 1);
             return run(words[i], resolve, true);
           });
-          console.log('play')
-          await playAudio(words[i]);
-          await new Promise((resolve)=>setTimeout(resolve,500));
-          await playAudio("good job");
+   
+
         }
       })();
 
