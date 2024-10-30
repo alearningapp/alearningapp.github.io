@@ -80,7 +80,7 @@
             audio.pause();
             audio.currentTime = 0; // Reset to the beginning
             audio.remove(); // Remove the audio element
-            document.querySelector('#backgroundMusic').volume = 1;
+            document.querySelector('#backgroundMusic').volume = 0.5;
             resolve();
           });
           console.log("playAudio");
@@ -88,7 +88,7 @@
           document.querySelector('#backgroundMusic').volume = 0.2;
           audio.play().catch((error) => {
             console.error("Error playing audio:", error);
-            document.querySelector('#backgroundMusic').volume = 1;
+            document.querySelector('#backgroundMusic').volume = 0.5;
             resolve();
           });
 
