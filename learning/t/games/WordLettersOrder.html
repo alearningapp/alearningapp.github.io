@@ -36,8 +36,10 @@
       }
     </style>
     <script>
-      function playAudio(word) {
-        // Create a new audio element
+     async function playAudio(word) {
+        return new Promise((resolve)=>{
+
+                    // Create a new audio element
         const audio = new Audio(
           "/dictaudio/" + word.toLocaleLowerCase() + ".mp3"
         );
@@ -47,15 +49,21 @@
           audio.pause();
           audio.currentTime = 0; // Reset to the beginning
           audio.remove(); // Remove the audio element
+          resolve();
         });
-
+        console.log('playAudio')
         // Start playing the audio
         audio.play().catch((error) => {
           console.error("Error playing audio:", error);
+          resolve();
+
         });
 
         // Optionally, you can return the audio element if needed
         return audio;
+
+        });
+
       }
       function getVisibleCircleCoordinates(numCircles, distance, canvasSize) {
         const coordinates = [];
@@ -107,7 +115,7 @@
       Your browser does not support the audio element.
     </audio>
     <svg id="gameArea">
-      <rect width="100%" height="50%" fill="#e6e6e6" />
+      <rect width="100%" height="37.5%" fill="#e6e6e6" />
 
       <!-- Top Part Lines -->
       <line x1="0" y1="12.5%" x2="100%" y2="12.5%" class="solid" />
@@ -185,7 +193,7 @@
         lettersNode.setAttribute("font-size", fontSize);
 
         const orderLetters = [];
-        const startX = 50;
+        const startX = 10;
 
         const texts = letters.map((letter) => {
           const textElement = document.createElementNS(
@@ -260,7 +268,7 @@
               [document.querySelector("#start"), startbtn].map((e) =>
                 e.classList.remove("started")
               );
-              playAudio("good job");
+             doFinish&&doFinish();
             }
           });
 
@@ -280,7 +288,7 @@
           translateY = bbox.y + bbox.height / 2 - tbbox.y;
           text.setAttribute(
             "transform",
-            `translate(${translateX}, ${translateY}) rotate(0) scale(0.1)`
+            `translate(${translateX}, ${translateY}) rotate(0) scale(0.01)`
           );
           translateX += text.getBBox().width;
         });
@@ -301,7 +309,7 @@
               );
               translateY =
                 bbox.y + bbox.height / 2 - (tbbox.y + tbbox.height / 2);
-              const randomRotation = Math.random() * 40 - 20; // Range: -30 to 30 degrees
+              let randomRotation = Math.random() * 60 - 30; // Range: -30 to 30 degrees
               let index;
               while (
                 (index = parseInt(Math.random() * ppoints.length - 1)) &&
@@ -310,6 +318,9 @@
               randomIndexs.push(index);
               translateX = ppoints[index].x - startX;
               translateY = ppoints[index].y - finalYPosition;
+
+              if(ppoints[index].x + fontSize/2>svg.clientWidth) randomRotation=0;
+
               text.setAttribute(
                 "transform",
                 `translate(${translateX}, ${translateY}) rotate(${randomRotation}) scale(1)`
@@ -348,7 +359,7 @@
 
         let ppoints = [];
         for (
-          let y = svg.clientHeight / 2;
+          let y = svg.clientHeight *5/8 ;
           y <= svg.clientHeight - fontSize / 3;
           y += fontSize / 3
         ) {
@@ -379,6 +390,10 @@
             words.splice(i, 1);
             return run(words[i], resolve, true);
           });
+          console.log('play')
+          await playAudio(words[i]);
+          await new Promise((resolve)=>setTimeout(resolve,500));
+          await playAudio("good job");
         }
       })();
 
