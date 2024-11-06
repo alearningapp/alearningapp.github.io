@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter A Point Calculation</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+    <script src="point.js"></script>
+</head>
+<body>
+    <canvas id="myCanvas" width="800" height="400"></canvas>
+
+
+    <script>
+
+
+        const canvas = document.getElementById('myCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set font size and family
+        ctx.font = '300px Arial';
+        ctx.fillStyle = 'black';
+        ctx.textBaseline = 'top';
+
+        // Draw the letter 'a'
+        const text = 'a';
+        ctx.fillText(text, 0, 0);
+
+        // Get image data
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        let leftmostX = canvas.width;
+        let rightmostX = 0;
+        const y = 0; // y coordinate where the letter is drawn
+        let ly=0;
+        // Find the leftmost and rightmost pixel
+        for (let x = 0; x < canvas.width; x++) {
+            for (let y = 0; y < canvas.height; y++) {
+                const index = (y * canvas.width + x) * 4;
+                const alpha = data[index + 3]; // Getting alpha value
+                if (alpha > 0) { // If pixel is not transparent
+                    if (x < leftmostX) {
+                        leftmostX = x;
+                        ly=y;
+                    }
+                    if (x > rightmostX) rightmostX = x;
+                }
+            }
+        }
+
+        // Points A and B
+        const pointA = { x: leftmostX, y: ly };
+        const pointB = { x: rightmostX, y: y };
+        let points=[];
+
+        // Log the points
+        console.log('Point A:', pointA);
+        console.log('Point B:', pointB);
+
+
+        // Example: Increment x of Point A
+        let newPointB = { x: 0, y: pointA.y };
+        let startPoint;
+        for(let i=pointA.x+1;i++;true){
+            let pix= getPixelData(canvas,i,pointA.y)
+            if(pix.a<=0){
+                newPointB = { x: i-1, y: pointA.y }
+                startPoint = {x:newPointB.x/2+pointA.x/2,y:pointA.y};
+                points.push(startPoint); // Point A
+               
+                break;
+            }
+        }
+
+        // Log the new point B
+
+        console.log(getEdges(canvas,startPoint))
+
+        // Draw points on the canvas for visualization
+        ctx.fillStyle = 'red';
+
+        points.push(...getNeighboringPixels(canvas,startPoint, 1)); 
+
+      
+        points.map(p=>ctx.fillRect(p.x, p.y, 5, 5));
+
+    </script>
+</body>
+</html>
