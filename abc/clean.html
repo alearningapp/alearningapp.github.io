@@ -1,0 +1,161 @@
+<html>
+
+<head>
+    <script>
+
+        async function list() {
+
+
+            if ("serviceWorker" in navigator) {
+
+                let cacheNames = await caches.keys();
+
+                let urls = [];
+                let cacheUrls = [];
+
+                for (let i = 0; i < cacheNames.length; i++) {
+
+                    console.log(cacheNames[i])
+                    let cache = await caches.open(cacheNames[i]);
+                    console.log(cache)
+                    let ks = await cache.keys();
+                    console.log(ks)
+
+                    cacheUrls.push(ks.map(r => [r.url, r.url.match(/\d{4}\/\d{2}\/\d{2}/)]));
+                }
+
+                let html = '';
+                for (let j = 0; j < cacheNames.length; j++) {
+
+                    let lsstr = '';
+
+                    for (let k = 0; k < cacheUrls[j].length; k++) {
+                        lsstr += `<li ><a target='_blank' href='${cacheUrls[j][k][0]}'>${cacheUrls[j][k][0]}</a></li>`;
+                    }
+
+
+                    html += `<div class='name'>${cacheNames[j]}</div><ul id='${cacheNames[j]}'>${lsstr}</ul>`
+                }
+
+                document.querySelector('#content').innerHTML = html;
+
+            }
+
+        }
+        async function remove(event) {
+
+            // await  removeTarget(event.target)
+
+            if (event.target.getAttribute('date') == 'null') confirm('remove ' + event.target.innerText) && await removeTarget(event.target);
+            else {
+
+                if (!confirm('remove all date of ' + event.target.getAttribute('date'))) return;
+
+                let els = document.querySelectorAll('[date="' + event.target.getAttribute('date') + '"]');
+                for (let i = 0; i < els.length; i++) {
+                    await removeTarget(els[i]);
+                }
+            }
+
+
+        }
+
+        async function removeTarget(target) {
+            await rmExpireItems(target.parentElement.id, target.innerText).then(() => {
+                target.className = 'del'
+            })
+
+        }
+
+        async function rmExpireItems(name, url) {
+            let c = await caches.open(name);
+            await c.match(url).then(
+                (res) =>
+
+                    (console.log("delete " + url), c.delete(url))
+            );
+
+        }
+
+        function clean() {
+
+            if ("serviceWorker" in navigator) {
+                caches.keys().then(function (cacheNames) {
+                    cacheNames.forEach(function (cacheName) {
+                        if (confirm("delete cache " + cacheName)) caches.delete(cacheName);
+                    });
+                });
+            }
+
+            /* if ('serviceWorker' in navigator) {
+                 navigator.serviceWorker.getRegistrations()
+                     .then(function (registrations) {
+                         for (let registration of registrations) {
+                             registration.unregister();
+                         }
+                     });
+             }*/
+        }
+        confirm("clean cache? ") && clean();
+
+        function unregister() {
+            confirm("unregister? ")
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                    alert('unregister')
+                }
+            });
+        }
+
+        function update() {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.update();
+                    alert('update')
+
+                }
+            });
+        }
+
+        async function showQuota() {
+            let quato = document.querySelector('#quota');
+            if ('storage' in navigator && 'estimate' in navigator.storage) {
+                let estimate = await navigator.storage.estimate();
+
+                quato.innerHTML = `Using ${estimate.usage / 1024 / 1024 / 1024} out of ${estimate.quota / 1024 / 1024 / 1024} GB. <br /> ${(estimate.usage / estimate.quota).toFixed(2)}%`;
+            } else {
+                quato.innerHTML = 'no support navigator.storage.estimate api';
+            }
+
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            showQuota();
+        });
+    </script>
+    <style>
+        .del {
+            text-decoration: line-through;
+        }
+
+        .name {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display:flex;justify-content: space-between;margin: 10px;">
+        <div onclick="clean()">clean</div>
+        <div onclick="list()">list</div>
+        <div onclick="unregister()">unregister</div>
+        <div onclick="update()">update</div>
+    </div>
+    <div id="quota"></div>
+    <div id="content">
+
+    </div>
+
+</body>
+
+</html>

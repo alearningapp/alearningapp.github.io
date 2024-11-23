@@ -1,0 +1,50 @@
+
+p[data-v-6a4ff111] {
+  font-size: 20px;
+}
+.floatTop2[data-v-6a4ff111] {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  padding: 1px;
+  padding-left: 3px;
+}
+.newword[data-v-6a4ff111] {
+  width: 4em;
+  /* font-size: 80%; */
+  vertical-align: top;
+}
+.src[data-v-6a4ff111] {
+  color: gray;
+  font-size: 0.8em;
+  flex-grow: 0;
+  margin-left: 5px;
+  cursor: pointer;
+  right: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.row[data-v-6a4ff111] {
+  position: relative;
+  text-align: left;
+  margin: 0 !important;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+b[data-v-6a4ff111] {
+  font-weight: bold;
+}
+.cur[data-v-6a4ff111] {
+  font-weight: bold;
+}
+.to[data-v-6a4ff111] {
+  cursor: pointer;
+  width: 100%;
+  display: inline-block;
+}
+

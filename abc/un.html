@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <script>
+        function clean() {
+            if ("serviceWorker" in navigator) {
+                caches.keys().then(function (cacheNames) {
+                    cacheNames.forEach(function (cacheName) {
+                        if (confirm("delete cache " + cacheName)) caches.delete(cacheName);
+                    });
+                });
+            }
+
+            /* if ('serviceWorker' in navigator) {
+                 navigator.serviceWorker.getRegistrations()
+                     .then(function (registrations) {
+                         for (let registration of registrations) {
+                             registration.unregister();
+                         }
+                     });
+             }*/
+        }
+        clean();
+
+        function unregister() {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+
+        function update() {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.update();
+                }
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+    <div style="display:flex;">
+    <div onclick="clean()">clean</div>
+    <div onclick="unregister()">unregister</div>
+    <div onclick="update()">update</div>
+</div>
+</body>
+
+</html>

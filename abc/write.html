@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<head>
+  <meta http-equiv="Cache-Control" content="public" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta content="no-referrer" name="referrer" />
+<style>
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  font-size: 100%!important;
+}
+button{
+  font-size: 200%;
+}
+#topbts{    position: fixed;
+    top: 0;
+    width: 100%;
+    left: 0;
+    right: 0;
+    height: 20px;}
+#container{width: 100vw;height: 100vh;overflow: hidden;;}
+canvas {
+  height: 100%;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+}
+*{
+  user-select: none;
+}
+#bts{
+    position: fixed;
+    bottom: 0;
+    z-index: 1;}
+</style>
+</head>
+<body>
+<div id="container">
+  <canvas id="canvasbg" ></canvas>
+  <canvas id="canvas" style="z-index: 1;" ></canvas>
+</div>
+
+<div id="bts" style="width:100%;">
+  <div style="    display: flex;
+  justify-content: space-between;
+  width: 100%;">
+<button id="playBtn">Play</button>
+<button id="grid">Grid</button>
+<button id="clearBtn">Clear</button>
+</div>
+<div id="topbts" >
+<div style="    display: flex;
+justify-content: space-between;
+width: 100%;">
+<input type="range" id="lineWidthSlider" min="1" max="10" step="1" value="5">
+
+<input type="color" id="colorPicker" name="colorPicker">
+</div>
+</div>
+</div>
+
+<script src="write.js" type="text/javascript"></script>
+
+</body>
+</html>

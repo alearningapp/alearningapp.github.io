@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="en"><head><base href=""><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><!--[if IE]><link rel="icon" href="favicon.ico" /><![endif]--><meta http-equiv="Cache-Control" content="public"><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"><meta content="no-referrer" name="referrer"><meta name="theme-color" content="#0066FF" media="(prefers-color-scheme: light)"><script>window.chrome = {};</script><title>Main</title><script>/* 判断当前浏览器是否支持serviceWorker */
+    //'production' != 'production' &&
+    if (false && 'serviceWorker' in navigator) {
+      /* 当页面加载完成就创建一个serviceWorker */
+      window.addEventListener('load', function () {
+        /* 创建并指定对应的执行内容 */
+        /* scope 参数是可选的，可以用来指定你想让 service worker 控制的内容的子目录。 在这个例子里，我们指定了 '/'，表示 根网域下的所有内容。这也是默认值。 */
+        //navigator.serviceWorker.register('./sw.js', { scope: './' })
+        navigator.serviceWorker.register('./service-worker.debug.js', { scope: './' })
+          .then(function (registration) {
+
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            document.title = 'ready'
+          })
+          .catch(function (err) {
+
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }</script><link href="css/chunk-common.css?_hash=89b01640" rel="preload" as="style"><link href="css/chunk-vendors.css?_hash=709554a7" rel="preload" as="style"><link href="css/index.css?_hash=1cac089f" rel="preload" as="style"><link href="js/chunk-common.js?_hash=cef7d90d" rel="preload" as="script"><link href="js/chunk-vendors.js?_hash=c1a7912e" rel="preload" as="script"><link href="js/index.js?_hash=e8ef630b" rel="preload" as="script"><link href="css/chunk-vendors.css?_hash=709554a7" rel="stylesheet"><link href="css/chunk-common.css?_hash=89b01640" rel="stylesheet"><link href="css/index.css?_hash=1cac089f" rel="stylesheet"><link rel="icon" type="image/png" sizes="32x32" href="img/icons/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="img/icons/favicon-16x16.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#4DBA87"><meta name="apple-mobile-web-app-capable" content="no"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="my"><link rel="apple-touch-icon" href="img/icons/apple-touch-icon-152x152.png"><link rel="mask-icon" href="img/icons/safari-pinned-tab.svg" color="#4DBA87"><meta name="msapplication-TileImage" content="img/icons/msapplication-icon-144x144.png"><meta name="msapplication-TileColor" content="#000000"></head><body style="margin:0;"><noscript><strong>We're sorry but Main doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="mytranslate_app"></div><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8176357303254013" crossorigin="anonymous"></script><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8176357303254013" data-ad-slot="6775864822" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle = window.adsbygoogle || []).push({});</script><script src="js/chunk-vendors.js?_hash=c1a7912e"></script><script src="js/chunk-common.js?_hash=cef7d90d"></script><script src="js/index.js?_hash=e8ef630b"></script></body></html>
