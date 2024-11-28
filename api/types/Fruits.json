@@ -1,0 +1,67 @@
+[
+  {
+    "w": "Mango",
+    "icon": "svg/mango.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Strawberry",
+    "icon": "svg/strawberry.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Coconut",
+    "icon": "svg/coconut.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Lemon",
+    "icon": "svg/lemon.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Kiwi",
+    "icon": "svg/kiwi.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Pineapple",
+    "icon": "svg/pineapple.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Orange",
+    "icon": "svg/orange.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Peach",
+    "icon": "svg/peach.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Watermelon",
+    "icon": "svg/watermelon.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Pear",
+    "icon": "svg/pear.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Cherry",
+    "icon": "svg/cherry.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Banana",
+    "icon": "svg/banana.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Apple",
+    "icon": "svg/apple.svg",
+    "typeId": "1732716193070"
+  }
+]
