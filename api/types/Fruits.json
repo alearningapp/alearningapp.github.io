@@ -1,5 +1,30 @@
 [
   {
+    "w": "Lime",
+    "icon": "svg/lime.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Papaya",
+    "icon": "svg/papaya.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Grape",
+    "icon": "svg/grape.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Melon",
+    "icon": "svg/melon.svg",
+    "typeId": "1732716193070"
+  },
+  {
+    "w": "Lychee",
+    "icon": "svg/lychee.svg",
+    "typeId": "1732716193070"
+  },
+  {
     "w": "Mango",
     "icon": "svg/mango.svg",
     "typeId": "1732716193070"

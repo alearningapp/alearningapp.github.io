@@ -1,12 +1,57 @@
 [
   {
-    "w": "Drink",
-    "icon": "svg/drink.svg",
+    "w": "Talk",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Listen",
+    "icon": "",
     "typeId": "1732862122354"
   },
   {
     "w": "Eat",
     "icon": "svg/eat.svg",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Dance",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Sign",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Study",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Read",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Write",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Sleep",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Play",
+    "icon": "",
+    "typeId": "1732862122354"
+  },
+  {
+    "w": "Drink",
+    "icon": "svg/drink.svg",
     "typeId": "1732862122354"
   },
   {
