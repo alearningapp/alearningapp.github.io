@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Letters Game - Make by Alearningapp.com</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            background-color: #e6e6e6;
+        }
+        .button {
+            fill: #4caf50;
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        .button:hover {
+            fill: #45a049;
+        }
+        * {
+            user-select: none;
+        }
+        .started {
+            display: none;
+        }
+    </style>
+    <script>
+        async function playAudio(word) {
+            return new Promise((resolve) => {
+                const audio = new Audio("/dictaudio/" + word.toLowerCase() + ".mp3");
+                audio.addEventListener("ended", () => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.remove();
+                    resolve();
+                });
+                audio.play().catch((error) => {
+                    console.error("Error playing audio:", error);
+                    resolve();
+                });
+            });
+        }
+
+        function drawCircle(ctx, x, y, r, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawText(ctx, text, x, y, color, fontSize) {
+            ctx.fillStyle = color;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, x, y);
+        }
+
+        function drawLine(ctx, x1, y1, x2, y2, style) {
+            ctx.strokeStyle = style === 'solid' ? '#000' : '#000';
+            ctx.lineWidth = 1;
+            ctx.setLineDash(style === 'dashed' ? [5, 5] : []);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.setLineDash([]); // reset to solid
+        }
+
+        function clearCanvas(ctx, canvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</head>
+<body>
+    <audio id="backgroundMusic" controls autoplay loop style="display: none">
+        <source src="/sound/bg/Sakura-Girl-Daisy.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        function drawGameArea() {
+            clearCanvas(ctx, canvas);
+            drawLine(ctx, 0, canvas.height * 0.125, canvas.width, canvas.height * 0.125, 'solid');
+            drawLine(ctx, 0, canvas.height * 0.25, canvas.width, canvas.height * 0.25, 'dashed');
+            drawLine(ctx, 0, canvas.height * 0.375, canvas.width, canvas.height * 0.375, 'solid');
+            drawCircle(ctx, canvas.width / 2, canvas.height * 0.75, 30, '#4caf50');
+            drawText(ctx, 'Start', canvas.width / 2, canvas.height * 0.75, 'white', 16);
+        }
+
+        drawGameArea();
+
+        canvas.addEventListener('click', (event) => {
+            const x = event.clientX;
+            const y = event.clientY;
+            const distance = Math.sqrt((x - canvas.width / 2) ** 2 + (y - canvas.height * 0.75) ** 2);
+            if (distance < 30) {
+                startGame();
+            }
+        });
+
+        function startGame() {
+            // Implement the game start logic here
+            console.log("Game started!");
+            // For example: run(id, doFinish, isFirst);
+        }
+
+        (async () => {
+            // Game initialization and event handling can be added here
+        })();
+    </script>
+</body>
+</html>
