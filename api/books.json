@@ -4,7 +4,7 @@
     "title": "Car",
     "content": "My car.\nThis is my car.\nMy car is big.",
     "image": "img/cry.png",
-    "img": "img/car.png"
+    "img": "/img/car.png"
   },
   {
     "id": 1733322448401,
