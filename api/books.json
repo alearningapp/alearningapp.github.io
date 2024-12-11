@@ -10,18 +10,18 @@
     "id": 1733322448401,
     "title": "Pan",
     "content": "My pan.\nMy pan is small.",
-    "img": "img/pan.svg"
+    "img": "/img/pan.svg"
   },
   {
     "id": 1733321256907,
     "title": "Pan",
     "content": "My pan.\nMy pan is big.",
-    "img": "img/pan.svg"
+    "img": "/img/pan.svg"
   },
   {
     "id": 1733318187029,
     "title": "Book",
     "content": "A book.\nThis is a Book.",
-    "img": "img/book.svg"
+    "img": "/img/book.svg"
   }
 ]
