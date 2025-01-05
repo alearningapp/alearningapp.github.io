@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            cursor: pointer;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .task-section {
+            margin: 20px 0;
+        }
+        .task-section label {
+            font-weight: bold;
+            display: block;
+            cursor: pointer; /* Make label clickable */
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px dashed #ccc;
+            margin-top: 10px;
+            padding: 10px;  /* Default padding */
+            background: #f9f9f9;
+            cursor: move;
+        }
+        li.dragging {
+            opacity: 0.5;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .task-index {
+            margin-right: 10px;
+        }
+        .task-label {
+            flex: 1;
+            text-align: left;
+        }
+
+        /* Print styles */
+        @media print {
+            button, input[type="text"] {
+                display: none; /* Hide buttons and input fields */
+            }
+            .container {
+                box-shadow: none; /* Remove box-shadow on print */
+            }
+            li {
+                padding: 0; /* Remove padding from list items on print */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="title">Daily To-Do List</h1>
+    <div id="task-sections"></div>
+    <input type="text" id="new-section-input" placeholder="New task section name...">
+    <button id="add-section-button">Add Task Section</button>
+</div>
+
+<script>
+    let sectionIndex = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedTitle = localStorage.getItem('todoTitle');
+        const savedSections = JSON.parse(localStorage.getItem('taskSections')) || [];
+
+        if (savedTitle) {
+            document.getElementById('title').textContent = savedTitle;
+        }
+
+        savedSections.forEach((section, index) => {
+            addTaskSection(section.name, section.tasks, index);
+        });
+    });
+
+    document.getElementById('title').onclick = function() {
+        editTitle(this);
+    };
+
+    function editTitle(titleElement) {
+        const currentText = titleElement.textContent;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentText;
+
+        input.onblur = function() {
+            const newTitle = input.value.trim() || currentText;
+            titleElement.textContent = newTitle;
+            localStorage.setItem('todoTitle', newTitle);
+            input.remove();
+        };
+
+        input.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                input.blur();
+            }
+        };
+
+        titleElement.parentNode.insertBefore(input, titleElement);
+        titleElement.style.display = 'none';
+        input.focus();
+    }
+
+    function addTaskSection(name = '', tasks = [], index = sectionIndex) {
+        const taskSections = document.getElementById('task-sections');
+
+        const taskSection = document.createElement('div');
+        taskSection.className = 'task-section';
+
+        const label = document.createElement('label');
+        label.textContent = String.fromCharCode(65 + index) + '. ' + name;
+        label.onclick = function() {
+            editSectionTitle(label);
+        };
+
+        const ul = document.createElement('ul');
+
+        tasks.forEach(task => addTask(ul, task.text, task.completed));
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = ''; // No default placeholder text
+
+        const button = document.createElement('button');
+        button.textContent = 'Add Task';
+        button.onclick = function() {
+            const taskText = input.value; // Allow empty task
+            addTask(ul, taskText);
+            input.value = ''; // Clear input after adding
+            saveToLocalStorage();
+        };
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove Section';
+        removeButton.style.marginLeft = '10px';
+        removeButton.onclick = function() {
+            taskSections.removeChild(taskSection);
+            saveToLocalStorage();
+        };
+
+        const removeTasksButton = document.createElement('button');
+        removeTasksButton.textContent = 'Remove Selected Tasks';
+        removeTasksButton.style.marginLeft = '10px';
+        removeTasksButton.onclick = function() {
+            removeSelectedTasks(ul);
+            saveToLocalStorage();
+        };
+
+        taskSection.appendChild(label);
+        taskSection.appendChild(ul);
+        taskSection.appendChild(input);
+        taskSection.appendChild(button);
+        taskSection.appendChild(removeTasksButton);
+        taskSection.appendChild(removeButton);
+        taskSections.appendChild(taskSection);
+
+        sectionIndex++;
+        document.getElementById('new-section-input').value = '';
+        saveToLocalStorage();
+    }
+
+    function editSectionTitle(label) {
+        const currentText = label.textContent.split('. ')[1]; // Get the actual section name
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentText;
+
+        input.onblur = function() {
+            const newTitle = input.value.trim() || currentText;
+            label.textContent = label.textContent.charAt(0) + '. ' + newTitle; // Update with index
+            saveToLocalStorage();
+            label.style.display = 'block'; // Show the label again
+            input.remove();
+        };
+
+        input.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                input.blur();
+            }
+        };
+
+        label.style.display = 'none'; // Hide the label
+        label.parentNode.insertBefore(input, label);
+        input.focus();
+    }
+
+    function addTask(ul, taskText = '', completed = false) {
+        const newTask = document.createElement('li');
+        newTask.draggable = true;
+
+        const indexNumber = document.createElement('span');
+        indexNumber.className = 'task-index';
+        indexNumber.textContent = ul.children.length + 1 + ".";
+
+        const label = document.createElement('span');
+        label.className = 'task-label';
+        label.textContent = taskText;
+        label.onclick = function() {
+            editTask(label);
+        };
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = completed;
+        checkbox.id = `task-${ul.children.length}`;
+        checkbox.style.marginLeft = '10px';
+
+        newTask.appendChild(indexNumber);
+        newTask.appendChild(label);
+        newTask.appendChild(checkbox);
+        ul.appendChild(newTask);
+
+        newTask.addEventListener('dragstart', () => {
+            newTask.classList.add('dragging');
+        });
+
+        newTask.addEventListener('dragend', () => {
+            newTask.classList.remove('dragging');
+            updateTaskIndices(ul);
+            saveToLocalStorage();
+        });
+
+        newTask.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingItem = document.querySelector('.dragging');
+            const currentItem = e.target;
+            if (currentItem && currentItem !== draggingItem && currentItem.nodeName === 'LI') {
+                const draggingIndex = Array.from(ul.children).indexOf(draggingItem);
+                const currentIndex = Array.from(ul.children).indexOf(currentItem);
+                if (draggingIndex < currentIndex) {
+                    ul.insertBefore(draggingItem, currentItem.nextSibling);
+                } else {
+                    ul.insertBefore(draggingItem, currentItem);
+                }
+            }
+        });
+    }
+
+    function editTask(label) {
+        const currentText = label.textContent;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentText;
+
+        input.onblur = function() {
+            label.textContent = input.value;
+            label.style.display = 'inline';
+            input.remove();
+            saveToLocalStorage();
+        };
+
+        input.onkeypress = function(e) {
+            if (e.key === 'Enter') {
+                input.blur();
+            }
+        };
+
+        label.style.display = 'none';
+        label.parentNode.insertBefore(input, label);
+        input.focus();
+    }
+
+    function removeSelectedTasks(ul) {
+        const tasks = ul.children;
+        for (let i = tasks.length - 1; i >= 0; i--) {
+            const checkbox = tasks[i].querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                ul.removeChild(tasks[i]);
+            }
+        }
+        updateTaskIndices(ul);
+        saveToLocalStorage();
+    }
+
+    function updateTaskIndices(ul) {
+        const tasks = ul.children;
+        for (let i = 0; i < tasks.length; i++) {
+            const indexNumber = tasks[i].querySelector('.task-index');
+            indexNumber.textContent = (i + 1) + ".";
+        }
+    }
+
+    function saveToLocalStorage() {
+        const sections = [];
+        const taskSections = document.getElementById('task-sections').children;
+
+        for (let section of taskSections) {
+            const label = section.querySelector('label').textContent.split('. ')[1];
+            const tasks = Array.from(section.querySelectorAll('li')).map(task => {
+                return {
+                    text: task.querySelector('.task-label').textContent,
+                    completed: task.querySelector('input[type="checkbox"]').checked
+                };
+            });
+            sections.push({ name: label, tasks: tasks });
+        }
+
+        localStorage.setItem('taskSections', JSON.stringify(sections));
+    }
+
+    document.getElementById('add-section-button').onclick = function() {
+        const sectionInput = document.getElementById('new-section-input');
+        const sectionName = sectionInput.value.trim();
+
+        if (sectionName) {
+            addTaskSection(sectionName, [], sectionIndex);
+            sectionInput.value = '';
+        } else {
+            alert("Please enter a section name.");
+        }
+    };
+</script>
+
+</body>
+</html>
