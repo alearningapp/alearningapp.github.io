@@ -34,7 +34,7 @@
     <script>
         async function playAudio(word) {
             return new Promise((resolve) => {
-                const audio = new Audio("/dictaudio/" + word.toLowerCase() + ".mp3");
+                const audio = new Audio("/data/dictaudio/" + word.toLowerCase() + ".mp3");
                 audio.addEventListener("ended", () => {
                     audio.pause();
                     audio.currentTime = 0;
@@ -81,7 +81,7 @@
 </head>
 <body>
     <audio id="backgroundMusic" controls autoplay loop style="display: none">
-        <source src="/sound/bg/Sakura-Girl-Daisy.mp3" type="audio/mpeg" />
+        <source src="/data/sound/bg/Sakura-Girl-Daisy.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
     </audio>
     <canvas id="gameCanvas"></canvas>
